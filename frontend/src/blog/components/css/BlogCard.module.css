@@ -1,0 +1,49 @@
+:root {
+  --font2: 'Roboto', sans-serif;
+}
+.home-articles {
+  padding: 18px;
+  background-color: rgb(248, 239, 239, 0.5);
+  margin-top: 23px;
+  position: relative;
+}
+.home-article {
+  display: flex;
+  margin: 25px;
+}
+
+.home-article img {
+  width: 300px;
+}
+
+.home-article-content {
+  align-self: center;
+  padding: 25px;
+}
+
+.home-article-content a {
+  text-decoration: none;
+  color: black;
+}
+.max-width-1 {
+  max-width: 80vw;
+}
+.m-auto {
+  margin: auto;
+}
+.font2 {
+  font-family: var(--font2);
+}
+@media screen and (max-width: 1200px) {
+  .home-article {
+    flex-direction: column;
+  }
+
+  .home-article-img {
+    text-align: center;
+  }
+
+  .home-article img {
+    width: 60vw;
+  }
+}

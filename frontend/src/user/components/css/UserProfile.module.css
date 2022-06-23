@@ -1,0 +1,17 @@
+.content {
+  margin-top: 7rem;
+  width: 40%;
+  text-align: center;
+}
+.blogs {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+.link {
+  font-size: 1.4rem;
+}
+@media (max-width: 1200px) {
+  .content {
+    width: 80%;
+  }
+}

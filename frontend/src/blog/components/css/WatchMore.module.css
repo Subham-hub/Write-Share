@@ -1,0 +1,30 @@
+.more-post {
+  flex-direction: column;
+  align-items: center;
+}
+.blogpost-meta {
+  display: flex;
+  justify-content: space-between;
+}
+.max-width-1 {
+  max-width: 80vw;
+}
+.home-article {
+  display: flex;
+  margin: 25px;
+}
+.home-article-img {
+  text-align: center;
+}
+.home-article-content {
+  align-self: center;
+  padding: 25px;
+}
+
+.home-article-content a {
+  text-decoration: none;
+  color: black;
+}
+.row {
+  display: flex;
+}

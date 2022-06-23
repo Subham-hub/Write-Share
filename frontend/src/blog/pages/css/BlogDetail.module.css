@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+:root {
+  --main-bg-color: #bd6418;
+  --font1: 'Baloo Bhaina 2', cursive;
+}
+.font1 {
+  font-family: var(--font1);
+}
+.max-width-1 {
+  max-width: 80vw;
+}
+.max-width-2 {
+  max-width: 60vw;
+}
+.m-auto {
+  margin: auto;
+}
+.my-2 {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+.blog-post-content h1 {
+  text-align: center;
+}
+.blog-post-content p {
+  font-size: 18px;
+}
+.post-img {
+  margin-top: 5rem;
+  height: 404px;
+  overflow: hidden;
+}
+.post-img img {
+  width: 100%;
+  padding: 0 5rem;
+}
+.author-info {
+  margin: 12px 0;
+}
+.author-info div {
+  padding: 4px 0px;
+  font-family: var(--font2);
+}
+.social {
+  padding-right: 53px;
+  align-self: center;
+  cursor: pointer;
+}
+@media screen and (max-width: 1200px) {
+  .social {
+    padding: 0;
+  }
+  .post-img {
+    height: auto;
+    margin-top: 5rem;
+  }
+  .post-img img {
+    width: 100%;
+    padding: 0;
+    margin-left: 0.5rem;
+  }
+}
