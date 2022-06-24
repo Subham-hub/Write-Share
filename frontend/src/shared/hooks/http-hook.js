@@ -6,15 +6,12 @@ export const useHttp = () => {
   const [error, setError] = useState()
 
   const sendRequest = useCallback(
-    async (endpoint, method = 'GET', data, headers, type = 'mb') => {
+    async (endpoint, method = 'GET', data, headers) => {
       try {
         setIsloading(true)
         const response = await axios({
           method,
-          url:
-            type === 'mb'
-              ? `${process.env.REACT_APP_BACKEND_URL}/${endpoint}`
-              : endpoint,
+          url: `${process.env.REACT_APP_BACKEND_URL}/${endpoint}`,
           data,
           headers,
         })

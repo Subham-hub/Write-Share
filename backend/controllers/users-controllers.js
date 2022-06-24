@@ -82,60 +82,13 @@ export const signup = async (req, res, next) => {
   cookieToken(newUser, res)
 }
 
-export const updateProfile = async (req, res, next) => {
-  const user = await User.findById(req.body.uid)
-  if (!user) return next(new HttpError('No user found with that id', 400))
-  switch (req.body.flag) {
-    case 'ADD_AVATAR':
-      let file = req.files.avatar
-      let avatarUploadResult
-      try {
-        avatarUploadResult = await cloudinary.v2.uploader.upload(
-          file.tempFilePath,
-          {
-            name: 'avatar',
-            folder: process.env.CLOUDINARY_FOLDER + 'avatar',
-          },
-        )
-      } catch (e) {
-        return next(
-          new HttpError('Something went wrong, please try again!', 500),
-        )
-      }
-      try {
-        user.avatar.id = avatarUploadResult.public_id
-        user.avatar.secure_url = avatarUploadResult.secure_url
-        await user.save()
-      } catch (e) {
-        return next(
-          new HttpError('Something went wrong, please try again!', 500),
-        )
-      }
-      res.status(200).json({ success: true })
-      break
-    case 'REMOVE_AVATAR':
-      try {
-        await cloudinary.v2.uploader.destroy(user.avatar.id)
-        user.avatar = undefined
-        user.save()
-      } catch (e) {
-        console.log(e)
-        return next(new HttpError('Somwthing went wrong hehe', 500))
-      }
-      res.status(200).json({ success: true })
-      break
-    default:
-      console.log('wrong Input')
-  }
-}
-
 export const login = async (req, res, next) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty()) {
+  if (!errors.isEmpty())
     return next(
       new HttpError('Invalid inputs passed, please check your data.', 422),
     )
-  }
+
   const { email, password } = req.body
   let user
   try {
@@ -165,7 +118,7 @@ export const logout = async (req, res, next) => {
   }
 }
 
-export const updateUser = async (req, res, next) => {
+export const updateProfile = async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return next(
@@ -174,7 +127,7 @@ export const updateUser = async (req, res, next) => {
   }
 
   const uid = req.params.uid
-  const { name, email, field } = req.body
+  const { firstname, lastname, email } = req.body
 
   let user
   try {
@@ -183,31 +136,79 @@ export const updateUser = async (req, res, next) => {
     return next(new HttpError('Something went wrong, please try Again', 500))
   }
   if (!user) {
-    return next(new HttpError("No user don't exits with that id", 403))
+    return next(new HttpError('No user exits with that id', 403))
   }
 
-  if (field === 'name') {
-    try {
-      await user.updateOne({ name }).catch(() => {
-        return next(
-          new HttpError('Something went wrong, please try again', 500),
-        )
-      })
-    } catch (e) {
-      return next(new HttpError('Cannot update name, please try again', 500))
-    }
-  } else if (field === 'email') {
-    try {
-      await user.updateOne({ email }).catch(() => {
-        return next(
-          new HttpError('Something went wrong, please try again', 500),
-        )
-      })
-    } catch (e) {
-      return next(new HttpError('Cannot  email, please try again', 500))
-    }
-  } else {
-    return next(new HttpError('Wrong input', 403))
+  user.firstname = firstname
+  user.lastname = lastname
+  user.email = email
+
+  try {
+    await user.save()
+  } catch (e) {
+    console.log(e)
+    return next(new HttpError('Something went wrong, please try again', 403))
   }
+
   res.json({ message: 'Updates successfully!' })
+}
+
+export const updateProfilePic = async (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty())
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422),
+    )
+
+  const { uid, flag } = req.body
+  let user
+  try {
+    user = await User.findById(uid)
+  } catch (e) {
+    return next(new HttpError('Something went wrong, please try again', 500))
+  }
+  if (!user) return next(new HttpError('No user found with that id', 400))
+
+  switch (flag) {
+    case 'CHANGE_AVATAR':
+      let file = req.files.newAvatar
+      let avatarUploadResult
+      try {
+        if (user.avatar.id !== null)
+          await cloudinary.v2.uploader.destroy(user.avatar.id)
+        avatarUploadResult = await cloudinary.v2.uploader.upload(
+          file.tempFilePath,
+          {
+            name: 'avatar',
+            folder: process.env.CLOUDINARY_FOLDER + 'avatar',
+          },
+        )
+        user.avatar.id = avatarUploadResult.public_id
+        user.avatar.secure_url = avatarUploadResult.secure_url
+        await user.save()
+      } catch (e) {
+        return next(
+          new HttpError('Something went wrong, please try again', 500),
+        )
+      }
+      res.status(200).json({ success: true, user })
+      break
+    case 'REMOVE_AVATAR':
+      if (user.avatar.id === null)
+        return next(new HttpError('Pic is already being removed', 400))
+      try {
+        await cloudinary.v2.uploader.destroy(user.avatar.id)
+        user.avatar.id = null
+        user.avatar.secure_url = null
+        await user.save()
+      } catch (e) {
+        return next(
+          new HttpError('Something went wrong, please try again', 500),
+        )
+      }
+      res.status(200).json({ success: true, user })
+      break
+    default:
+      return next(new HttpError('Wrong flag value', 403))
+  }
 }

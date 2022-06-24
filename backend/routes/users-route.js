@@ -10,7 +10,7 @@ import {
   logout,
   signup,
   updateProfile,
-  updateUser,
+  updateProfilePic,
 } from '../controllers/users-controllers.js'
 
 const router = express.Router()
@@ -29,8 +29,6 @@ router.post(
   signup,
 )
 
-router.post('/update_profile', updateProfile)
-
 router.post(
   '/login',
   [
@@ -43,14 +41,21 @@ router.post(
 router.get('/logout', logout)
 
 router.patch(
-  '/update-user/:uid',
+  '/update_profile/:uid',
+  isLoggedIn,
   [
-    check('name').not().isEmpty(),
-    check('field').not().isEmpty(),
+    check('firstname').not().isEmpty(),
+    check('lastname').not().isEmpty(),
     check('email').normalizeEmail().isEmail(),
   ],
+  updateProfile,
+)
+
+router.patch(
+  '/update_pic',
   isLoggedIn,
-  updateUser,
+  [check('uid').not().isEmpty(), check('flag').not().isEmpty()],
+  updateProfilePic,
 )
 
 export default router

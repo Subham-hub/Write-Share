@@ -13,7 +13,7 @@ import { useHttp } from '../../hooks/http-hook'
 import { authActions, serverLogout } from '../../store/authSlice'
 
 const RightNavElements = () => {
-  const [user, setUser] = useState([])
+  const [user, setUser] = useState()
   const { uid } = useSelector((s) => s.userData)
   const { isLoggedIn, isLoggingIn } = useSelector((s) => s.auth)
   const { sendRequest } = useHttp()
@@ -139,11 +139,11 @@ const RightNavElements = () => {
     <Box sx={{ flexGrow: -1 }}>
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-        {isLoggedIn && user.length !== 0 ? (
+        {isLoggedIn ? (
           <Avatar
             style={{ cursor: 'pointer' }}
-            src={user.avatar.secure_url}
-            alt={'Avatar of ' + user.name}
+            src={user ? user.avatar.secure_url : null}
+            alt={user ? 'Avatar of ' + user.name : 'Profile Pic'}
             size="large"
             edge="end"
             aria-label="account of current user"
