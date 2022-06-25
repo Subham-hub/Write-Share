@@ -25,7 +25,7 @@ const BlogDetail = () => {
               <div>
                 <b>Author - {blog.author}</b>
               </div>
-              <div>04 January. 6 min read</div>
+              {/* <div>04 January. 6 min read</div> */}
             </div>
             <div className="social"></div>
           </div>
