@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
+
 import userData from './userDataSlice'
 import auth from './authSlice'
 import blogs from './blogSlice'

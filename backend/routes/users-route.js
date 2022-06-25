@@ -4,7 +4,7 @@ import { check } from 'express-validator'
 import { isLoggedIn } from '../middleware/user-middleware.js'
 
 import {
-  getUserProfile,
+  getUserById,
   getUsers,
   login,
   logout,
@@ -16,7 +16,7 @@ import {
 const router = express.Router()
 
 router.get('/', isLoggedIn, getUsers)
-router.get('/user-profile/:uid', isLoggedIn, getUserProfile)
+router.get('/get_user/:uid', isLoggedIn, getUserById)
 
 router.post(
   '/signup',

@@ -1,57 +1,50 @@
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { validationResult } from 'express-validator'
 import cloudinary from 'cloudinary'
+import { validationResult } from 'express-validator'
 
 import HttpError from '../utils/http-error.js'
 import User from '../models/user-model.js'
 import cookieToken from '../utils/cookieToken.js'
+import { messages } from '../utils/error-messages.js'
 
 export const getUsers = async (req, res, next) => {
   let users
   try {
-    users = await User.find()
+    users = await User.find({}, '-password')
   } catch (e) {
-    return next(new HttpError('Fetching users failed, try again', 500))
+    return next(new HttpError(messages.serverError, 500))
   }
-  res.json({
-    users: users.map((user) => user.toObject({ getters: true })),
-  })
+  if (users.length === 0) new HttpError(messages.notFound, 404)
+  res.json(users)
 }
 
-export const getUserProfile = async (req, res, next) => {
+export const getUserById = async (req, res, next) => {
   const uid = req.params.uid
   let user
   try {
     user = await User.findById(uid)
   } catch (e) {
-    return next(new HttpError('Something went wrong, please try again', 500))
+    return next(new HttpError(messages.serverError, 500))
   }
-  if (!user) {
-    return next(new HttpError('No user exists with that ID, try again', 500))
-  }
+  if (!user) return next(new HttpError(messages.inputError, 404))
+
   user.password = undefined
-  res.status(200).json({ user })
+  res.status(200).json(user)
 }
 
 export const signup = async (req, res, next) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return next(
-      new HttpError('Invalid inputs passed, please check your data.', 422),
-    )
-  }
+  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422))
+
   const { firstname, lastname, email, password } = req.body
 
   try {
     const existingUser = await User.findOne({ email })
-    if (existingUser) {
+    if (existingUser)
       return next(
-        new HttpError('User exists already, please login instead', 422),
+        new HttpError('User already exists, please login instead', 422),
       )
-    }
   } catch (e) {
-    return next(new HttpError('Signing up failed, please try again', 500))
+    return next(new HttpError(messages.serverError, 500))
   }
 
   let file = req.files.avatar
@@ -65,7 +58,7 @@ export const signup = async (req, res, next) => {
       },
     )
   } catch (e) {
-    return next(new HttpError('Something went wrong, please try again!', 500))
+    return next(new HttpError(messages.serverError, 500))
   }
 
   const newUser = await User.create({
@@ -84,10 +77,7 @@ export const signup = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty())
-    return next(
-      new HttpError('Invalid inputs passed, please check your data.', 422),
-    )
+  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422))
 
   const { email, password } = req.body
   let user
@@ -98,14 +88,13 @@ export const login = async (req, res, next) => {
         new HttpError("Email don't exists, please signup instead", 403),
       )
   } catch (e) {
-    return next(new HttpError('Logging in failed, Please try again', 500))
+    return next(new HttpError(messages.serverError, 500))
   }
 
   const isPasswordCorrect = await user.isValidatedPassword(password)
 
-  if (!isPasswordCorrect) {
-    return next(new HttpError('Wrong password', 400))
-  }
+  if (!isPasswordCorrect) return next(new HttpError('Wrong password', 422))
+
   cookieToken(user, res)
 }
 
@@ -113,18 +102,14 @@ export const logout = async (req, res, next) => {
   try {
     res.cookie('token', null, { expires: new Date(Date.now()), httpOnly: true })
     res.status(200).json({ success: true, message: 'Logout success' })
-  } catch (error) {
-    console.log(error)
+  } catch (e) {
+    return next(new HttpError(messages.serverError, 500))
   }
 }
 
 export const updateProfile = async (req, res, next) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return next(
-      new HttpError('Invalid inputs passed, please check your data.', 422),
-    )
-  }
+  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422))
 
   const uid = req.params.uid
   const { firstname, lastname, email } = req.body
@@ -133,10 +118,10 @@ export const updateProfile = async (req, res, next) => {
   try {
     user = await User.findById(uid)
   } catch (e) {
-    return next(new HttpError('Something went wrong, please try Again', 500))
+    return next(new HttpError(messages.serverError, 500))
   }
   if (!user) {
-    return next(new HttpError('No user exits with that id', 403))
+    return next(new HttpError(messages.notFound, 404))
   }
 
   user.firstname = firstname
@@ -146,28 +131,24 @@ export const updateProfile = async (req, res, next) => {
   try {
     await user.save()
   } catch (e) {
-    console.log(e)
-    return next(new HttpError('Something went wrong, please try again', 403))
+    return next(new HttpError(messages.serverError, 500))
   }
 
-  res.json({ message: 'Updates successfully!' })
+  res.json({ success: true })
 }
 
 export const updateProfilePic = async (req, res, next) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty())
-    return next(
-      new HttpError('Invalid inputs passed, please check your data.', 422),
-    )
+  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422))
 
   const { uid, flag } = req.body
   let user
   try {
     user = await User.findById(uid)
   } catch (e) {
-    return next(new HttpError('Something went wrong, please try again', 500))
+    return next(new HttpError(messages.serverError, 500))
   }
-  if (!user) return next(new HttpError('No user found with that id', 400))
+  if (!user) return next(new HttpError(messages.notFound, 404))
 
   switch (flag) {
     case 'CHANGE_AVATAR':
@@ -187,24 +168,20 @@ export const updateProfilePic = async (req, res, next) => {
         user.avatar.secure_url = avatarUploadResult.secure_url
         await user.save()
       } catch (e) {
-        return next(
-          new HttpError('Something went wrong, please try again', 500),
-        )
+        return next(new HttpError(messages.serverError, 500))
       }
       res.status(200).json({ success: true, user })
       break
     case 'REMOVE_AVATAR':
       if (user.avatar.id === null)
-        return next(new HttpError('Pic is already being removed', 400))
+        return next(new HttpError('Pic is already being removed', 401))
       try {
         await cloudinary.v2.uploader.destroy(user.avatar.id)
         user.avatar.id = null
         user.avatar.secure_url = null
         await user.save()
       } catch (e) {
-        return next(
-          new HttpError('Something went wrong, please try again', 500),
-        )
+        return next(new HttpError(messages.serverError, 500))
       }
       res.status(200).json({ success: true, user })
       break
