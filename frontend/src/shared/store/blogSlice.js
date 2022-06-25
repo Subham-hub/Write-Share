@@ -29,14 +29,18 @@ const blogSlice = createSlice({
     editBlogs(state, action) {
       const { bid, data } = action.payload
       const blog = current(state).myBlogs.find((blog) => blog._id === bid)
-      const index = current(state).myBlogs.indexOf(blog)
-      state.myBlogs[index].title = data.title
-      state.myBlogs[index].description = data.description
-      state.allBlogs[index].title = data.title
-      state.allBlogs[index].description = data.description
+      const myBlogsIndex = current(state).myBlogs.indexOf(blog)
+      const allBlogsIndex = current(state).allBlogs.indexOf(blog)
+      state.myBlogs[myBlogsIndex].title = data.title
+      state.myBlogs[myBlogsIndex].description = data.description
+      state.allBlogs[allBlogsIndex].title = data.title
+      state.allBlogs[allBlogsIndex].description = data.description
     },
     deleteBlogs(state, action) {
       state.myBlogs = current(state).myBlogs.filter(
+        (blog) => blog._id !== action.payload,
+      )
+      state.allBlogs = current(state).allBlogs.filter(
         (blog) => blog._id !== action.payload,
       )
     },
@@ -47,7 +51,7 @@ export const fetchBlogs = () => {
   return async (dispatch) => {
     const blogs = await (
       await axios.get(`${process.env.REACT_APP_BACKEND_URL}/blogs`)
-    ).data.blogs
+    ).data
     const userData = JSON.parse(localStorage.getItem('userData'))
     let uid
     if (userData) uid = userData.uid
@@ -55,7 +59,6 @@ export const fetchBlogs = () => {
     dispatch(
       blogActions.addBlogs({ flag: 'initial', myBlogs, allBlogs: blogs }),
     )
-    return myBlogs
   }
 }
 

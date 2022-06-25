@@ -9,6 +9,7 @@ import { useHttp } from '../../shared/hooks/http-hook'
 import { blogActions } from '../../shared/store/blogSlice'
 
 import classes from './css/BlogCard.module.css'
+import { userDataActions } from '../../shared/store/userDataSlice'
 
 const BlogCard = ({ blogs, heading, showBtn = false }) => {
   const [bid, setBid] = useState()
@@ -27,13 +28,14 @@ const BlogCard = ({ blogs, heading, showBtn = false }) => {
   const deleteBlogHandler = async () => {
     handleClose()
     try {
-      await sendRequest(`blogs/delete-blog/${bid}`, 'DELETE', null, {
+      await sendRequest(`blogs/delete_blog/${bid}`, 'DELETE', null, {
         Authorization: `Bearer ${token}`,
       })
       dispatch(blogActions.deleteBlogs(bid))
+      dispatch(userDataActions.updateData({ flag: 'BLOGS', bid }))
       navigate('/blog')
     } catch (e) {
-      throw new Error('Something went wrong while deleting, please try again!')
+      throw new Error(e)
     }
   }
   return (
@@ -81,7 +83,10 @@ const BlogCard = ({ blogs, heading, showBtn = false }) => {
               <Fragment key={blog._id}>
                 <div className={`${classes['home-article']}`}>
                   <div className={classes['home-article-img']}>
-                    <img src={blog.image} alt={'Blog posted by ' + blog.name} />
+                    <img
+                      src={blog.image.secure_url}
+                      alt={'Blog posted by ' + blog.author}
+                    />
                   </div>
                   <div
                     className={`${classes['home-article-content']} ${classes.font1}`}
@@ -92,9 +97,9 @@ const BlogCard = ({ blogs, heading, showBtn = false }) => {
                     <div>
                       Author:{' '}
                       {isLoggedIn ? (
-                        <Link to={`/${blog.uid}/profile`}>{blog.name}</Link>
+                        <Link to={`/${blog.uid}/profile`}>{blog.author}</Link>
                       ) : (
-                        blog.name
+                        blog.author
                       )}
                     </div>
                     {/* <span>

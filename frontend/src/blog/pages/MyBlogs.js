@@ -11,7 +11,7 @@ const Blogs = () => {
   const navigate = useNavigate()
   const [blogs, setBlogs] = useState([])
   const { myBlogs } = useSelector((s) => s.blogs)
-  const { name } = useSelector((s) => s.userData)
+  const { firstname } = useSelector((s) => s.userData)
 
   const currentTime = new Date().getHours()
   let greeting
@@ -41,7 +41,7 @@ const Blogs = () => {
             <BLogCard
               blogs={blogs}
               showBtn={true}
-              heading={`${greeting} ${name.toLowerCase()}!`}
+              heading={`${greeting} ${firstname.toLowerCase()}!`}
             />
           </>
         ) : (

@@ -1,37 +1,18 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import BlogCard from '../../blog/components/BlogCard'
 import background from '../../assets/home-side-img.jpg'
 
 import classes from './Home.module.css'
-import { useHttp } from '../../shared/hooks/http-hook'
-import LoadingSpinner from '../../shared/UIElements/LoadingSpinner/LoadingSpinner'
-import Modal from '../../shared/UIElements/Modal/Modal'
 
 const Home = () => {
   const [blogs, setBlogs] = useState([])
-  const { sendRequest, isLoading, error, clearError } = useHttp()
-
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const blogResponse = (await sendRequest('blogs')).blogs
-        setBlogs(blogResponse)
-      } catch (e) {}
-    }
-    fetchBlogs()
-  }, [sendRequest])
+  const { allBlogs } = useSelector((s) => s.blogs)
+  useEffect(() => setBlogs(allBlogs), [allBlogs])
 
   return (
     <>
-      {
-        <Modal
-          open={error ? true : false}
-          modalDescription={error}
-          handleClose={clearError}
-        />
-      }
-      {isLoading && <LoadingSpinner asOverlay />}
       <div
         className={`${classes['m-auto']} ${classes.content} ${classes['max-width-1']} ${classes['my-2']}`}
       >
@@ -54,7 +35,7 @@ const Home = () => {
       <div className={`${classes['max-width-1']} ${classes['m-auto']}`}>
         <hr />
       </div>
-      {!isLoading && <BlogCard blogs={blogs} />}
+      <BlogCard blogs={blogs} />
     </>
   )
 }

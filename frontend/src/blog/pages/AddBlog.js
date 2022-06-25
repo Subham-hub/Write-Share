@@ -12,13 +12,14 @@ import { useHttp } from '../../shared/hooks/http-hook'
 import { blogActions } from '../../shared/store/blogSlice'
 
 import classes from './css/AddBlog.module.css'
+import { userDataActions } from '../../shared/store/userDataSlice'
 
 const AddBlog = () => {
   const [image, setImage] = useState()
   const [imageIsValid, setImageIsVaid] = useState(false)
   const { isLoading, error, clearError, sendRequest } = useHttp()
   const navigate = useNavigate()
-  const { uid, name, token } = useSelector((s) => s.userData)
+  const { uid, firstname, token } = useSelector((s) => s.userData)
   const dispatch = useDispatch()
   const { handleSubmit, register } = useForm()
 
@@ -26,20 +27,25 @@ const AddBlog = () => {
     const formData = new FormData()
     formData.append('title', data.title)
     formData.append('description', data.description)
-    formData.append('name', name)
+    formData.append('author', firstname)
     formData.append('uid', uid)
     formData.append('image', image)
     try {
-      const response = await sendRequest('blogs/add-blog', 'POST', formData, {
+      const response = await sendRequest('blogs/add_blog', 'POST', formData, {
         Authorization: `Bearer ${token}`,
       })
       dispatch(blogActions.addBlogs({ flag: 'add', newBlog: response.blog }))
+      if (response)
+        dispatch(
+          userDataActions.updateData({
+            flag: 'BLOGS',
+            blogFlag: 'ADD',
+            bid: response.blog._id,
+          }),
+        )
       navigate('/blog')
     } catch (e) {
-      console.log(e)
-      throw new Error(
-        'Something went wrong while posting the blog, please try again!',
-      )
+      throw new Error(e)
     }
   }
 

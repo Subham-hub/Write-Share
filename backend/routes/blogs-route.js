@@ -8,22 +8,19 @@ import {
   deleteBlog,
   editBLog,
   getBlogs,
-  getBlogsByUserId,
 } from '../controllers/blog-controllers.js'
 
 const router = express.Router()
 
 router.get('/', getBlogs)
 
-router.get('/:uid', isLoggedIn, getBlogsByUserId)
-//add-blog
 router.post(
-  '/add-blog',
+  '/add_blog',
   [check('title').not().isEmpty(), check('description').isLength({ min: 10 })],
   isLoggedIn,
   addBlog,
 )
-//edit-blog
+
 router.patch(
   '/edit/:bid',
   [check('title').not().isEmpty(), check('description').isLength({ min: 10 })],
@@ -31,6 +28,6 @@ router.patch(
   editBLog,
 )
 
-router.delete('/delete-blog/:bid', isLoggedIn, deleteBlog)
+router.delete('/delete_blog/:bid', isLoggedIn, deleteBlog)
 
 export default router

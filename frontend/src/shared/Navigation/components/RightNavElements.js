@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Box from '@mui/material/Box'
@@ -9,14 +9,11 @@ import Menu from '@mui/material/Menu'
 import MoreIcon from '@mui/icons-material/MoreVert'
 import { Button } from '@mui/material'
 
-import { useHttp } from '../../hooks/http-hook'
 import { authActions, serverLogout } from '../../store/authSlice'
 
 const RightNavElements = () => {
-  const [user, setUser] = useState()
-  const { uid } = useSelector((s) => s.userData)
+  const { avatar, firstname } = useSelector((s) => s.userData)
   const { isLoggedIn, isLoggingIn } = useSelector((s) => s.auth)
-  const { sendRequest } = useHttp()
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -125,16 +122,6 @@ const RightNavElements = () => {
     </Button>
   )
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const user = JSON.parse(sessionStorage.getItem('userData'))
-        setUser(user)
-      } catch (e) {}
-    }
-    fetchUser()
-  }, [uid, sendRequest])
-
   return (
     <Box sx={{ flexGrow: -1 }}>
       <Box sx={{ flexGrow: 1 }} />
@@ -142,8 +129,8 @@ const RightNavElements = () => {
         {isLoggedIn ? (
           <Avatar
             style={{ cursor: 'pointer' }}
-            src={user ? user.avatar.secure_url : null}
-            alt={user ? 'Avatar of ' + user.name : 'Profile Pic'}
+            src={avatar.secure_url}
+            alt={'Avatar of ' + firstname}
             size="large"
             edge="end"
             aria-label="account of current user"

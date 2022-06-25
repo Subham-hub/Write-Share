@@ -3,7 +3,16 @@ import React, { useRef, useState, useEffect } from 'react'
 
 import classes from './ImageUpload.module.css'
 
-const ImageUpload = ({ onImageUpload, id, center, errorText }) => {
+const ImageUpload = ({
+  onImageUpload,
+  id,
+  center,
+  errorText,
+  style,
+  btnText,
+  showPreview = true,
+  color = 'inherit',
+}) => {
   const [file, setFile] = useState()
   const [previewUrl, setPreviewUrl] = useState()
   const [isValid, setIsValid] = useState(false)
@@ -53,17 +62,21 @@ const ImageUpload = ({ onImageUpload, id, center, errorText }) => {
           onChange={pickedHandler}
         />
         <div className={`${classes['image-upload']} ${center && 'center'}`}>
-          <div className={classes['image-upload__preview']}>
+          <div
+            style={{ display: !showPreview && 'none' }}
+            className={classes['image-upload__preview']}
+          >
             {previewUrl && <img src={previewUrl} alt="Preview" />}
             {!previewUrl && <span>Please pick an image</span>}
           </div>
           <Button
             variant="outlined"
-            color="inherit"
+            color={color}
             type="button"
             onClick={pickImageHandler}
+            style={style}
           >
-            PICK IMAGE
+            {btnText || 'PICK IMAGE'}
           </Button>
         </div>
         {isValid && <p>{errorText}</p>}

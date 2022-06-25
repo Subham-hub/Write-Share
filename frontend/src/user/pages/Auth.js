@@ -9,16 +9,16 @@ import LoadingSpinner from '../../shared/UIElements/LoadingSpinner/LoadingSpinne
 import Modal from '../../shared/UIElements/Modal/Modal'
 import { useHttp } from '../../shared/hooks/http-hook'
 import { authActions } from '../../shared/store/authSlice'
-import { userDataActions } from '../../shared/store/userDataSlice'
+import { autoLogin } from '../../shared/store/userDataSlice'
 
 import classes from './css/Auth.module.css'
 import ImageUpload from '../../shared/UIElements/ImageUpload/ImageUpload'
 
 const Auth = () => {
-  const { isLoading, sendRequest, error, clearError } = useHttp()
-  const { isLoggingIn } = useSelector((s) => s.auth)
   const [image, setImage] = useState()
   const [imageIsValid, setImageIsVaid] = useState(false)
+  const { isLoading, sendRequest, error, clearError } = useHttp()
+  const { isLoggingIn } = useSelector((s) => s.auth)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -48,21 +48,17 @@ const Auth = () => {
       try {
         response = await sendRequest('users/signup', 'POST', formData)
       } catch (e) {
-        throw new Error(
-          'Something went wrong while signing in, please try again!',
-        )
+        throw new Error(e)
       }
     }
     if (response) {
-      const { _id: uid, firstname: name } = response.user
+      const userData = JSON.stringify({
+        uid: response.user._id,
+        token: response.token,
+      })
+      localStorage.setItem('userData', userData)
       dispatch(authActions.login())
-      dispatch(
-        userDataActions.setData({
-          uid,
-          token: response.token,
-          name,
-        }),
-      )
+      dispatch(autoLogin())
     }
     navigate('/')
   }
