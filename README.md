@@ -24,6 +24,6 @@ npm run dev
 
 ## Author
 
-👤 **Sub**
+👤 **Subham**
 
-- Github: [@Subu-hub](https://github.com/Subu-hub)
+- Github: [@Subham-hub](https://github.com/Subu-hub)
