@@ -6,7 +6,6 @@ import Layout from "./Layout";
 import LoadingSpinner from "./shared/UIElements/LoadingSpinner/LoadingSpinner";
 import { fetchBlogs } from "./shared/store/blogSlice";
 import { autoLogin } from "./shared/store/userDataSlice";
-import { ToastContainer } from "react-toastify";
 
 const Home = lazy(() => import("./home/pages/Home"));
 const Auth = lazy(() => import("./user/pages/Auth"));
@@ -29,7 +28,6 @@ const App = () => {
 
   return (
     <Layout>
-      <ToastContainer />
       <Suspense fallback={<LoadingSpinner asOverlay />}>
         <Routes>
           <Route path="/" element={<Home />} />
