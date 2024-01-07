@@ -1,36 +1,36 @@
-import cloudinary from 'cloudinary'
-import { validationResult } from 'express-validator'
+import cloudinary from "cloudinary";
+import { validationResult } from "express-validator";
 
-import Blog from '../models/blog-model.js'
-import HttpError from '../utils/http-error.js'
-import User from '../models/user-model.js'
-import { messages } from '../utils/error-messages.js'
+import Blog from "../models/blog-model.js";
+import HttpError from "../utils/http-error.js";
+import User from "../models/user-model.js";
+import { messages } from "../utils/error-messages.js";
 
 export const getBlogs = async (req, res, next) => {
-  let blogs
+  let blogs;
   try {
-    blogs = await Blog.find()
+    blogs = await Blog.find();
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
-  res.json(blogs)
-}
+  res.json(blogs);
+};
 
 export const addBlog = async (req, res, next) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422))
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422));
 
-  const { title, description, author, uid } = req.body
+  const { title, description, author, uid } = req.body;
 
-  let file = req.files.image
-  let imageUploadResult
+  let file = req.files.image;
+  let imageUploadResult;
   try {
     imageUploadResult = await cloudinary.v2.uploader.upload(file.tempFilePath, {
-      name: 'blog_img',
-      folder: process.env.CLOUDINARY_FOLDER + 'blog_img',
-    })
+      name: "blog_img",
+      folder: process.env.CLOUDINARY_FOLDER + "blog_img",
+    });
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
 
   const newBlog = new Blog({
@@ -42,75 +42,74 @@ export const addBlog = async (req, res, next) => {
       id: imageUploadResult.public_id,
       secure_url: imageUploadResult.secure_url,
     },
-  })
+  });
 
-  let user
+  let user;
   try {
-    user = await User.findById(newBlog.uid)
+    user = await User.findById(newBlog.uid);
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
 
   if (!user)
-    return next(new HttpError('Could not find user for provided id.', 404))
+    return next(new HttpError("Could not find user for provided id.", 404));
 
   try {
-    user.blogs.push(newBlog._id)
-    await newBlog.save()
-    await user.save()
+    user.blogs.push(newBlog._id);
+    await newBlog.save();
+    await user.save();
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
 
-  res.status(201).json({ success: true, blog: newBlog })
-}
+  res.status(201).json({ success: true, blog: newBlog });
+};
 
 export const editBLog = async (req, res, next) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422))
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(messages.inputError, 422));
 
-  const { title, description } = req.body
-  const bid = req.params.bid
+  const { title, description } = req.body;
+  const bid = req.params.bid;
 
-  let blog
+  let blog;
   try {
-    blog = await Blog.findById(bid)
+    blog = await Blog.findById(bid);
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
-  blog.title = title
-  blog.description = description
+  blog.title = title;
+  blog.description = description;
 
   try {
-    await blog.save()
+    await blog.save();
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
-  res.status(201).json({ success: true, blog })
-}
+  res.status(201).json({ success: true, blog });
+};
 
 export const deleteBlog = async (req, res, next) => {
-  const bid = req.params.bid
+  const bid = req.params.bid;
 
-  let blog
-  let user
+  let blog, user;
   try {
-    blog = await Blog.findById(bid)
-    user = await User.findById(blog.uid)
+    blog = await Blog.findById(bid);
+    user = await User.findById(blog.uid);
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
 
-  if (!blog) return next(new HttpError('No blogs with that id found', 404))
-  if (!user) return next(new HttpError('No blogs with that id found', 404))
+  if (!blog) return next(new HttpError("No blogs with that id found", 404));
+  if (!user) return next(new HttpError("No user with that id found", 404));
 
   try {
-    user.blogs.pull(bid)
-    await cloudinary.v2.uploader.destroy(blog.image.id)
-    await blog.delete()
-    await user.save()
+    user.blogs = user.blogs.filter((b) => b.toString() !== bid);
+    await cloudinary.v2.uploader.destroy(blog.image.id);
+    await blog.delete();
+    await user.save();
   } catch (e) {
-    return next(new HttpError(messages.serverError, 500))
+    return next(new HttpError(messages.serverError, 500));
   }
-  res.json({ message: 'Deleted' })
-}
+  res.json({ message: "Deleted" });
+};

@@ -1,20 +1,7 @@
-import React from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Modal from '@mui/material/Modal'
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  color: 'white',
-  bgcolor: 'black',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-}
+import React from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
 
 const MyModal = ({
   open,
@@ -22,7 +9,20 @@ const MyModal = ({
   modalText,
   modalDescription,
   key = undefined,
+  children,
 }) => {
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    color: "white",
+    bgcolor: "black",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
   return (
     <Modal
       key={key}
@@ -33,7 +33,7 @@ const MyModal = ({
     >
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
-          {modalText || 'An error occured'}
+          {modalText || "An error occured"}
         </Typography>
         <Typography
           id="modal-modal-description"
@@ -43,9 +43,10 @@ const MyModal = ({
         >
           {modalDescription}
         </Typography>
+        {children}
       </Box>
     </Modal>
-  )
-}
+  );
+};
 
-export default MyModal
+export default MyModal;

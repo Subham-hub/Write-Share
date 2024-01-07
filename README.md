@@ -1,6 +1,6 @@
 ﻿<h1 align="center">Welcome to Write &Share 👋</h1>
 
-> A simple blogging site where you can write and share your blogs with everyone! This project was made with the MERN stack, a popular javascript stack used to create full-stack web apps. Not an exciting project but this was my first I ever built fully on my own :)
+> Powered by the MERN stack, this portfolio blogs project showcases expertise in modern web development. Utilizing React and Redux for the front end, MongoDB as the database, and Node.js for the server, the application seamlessly integrates a responsive user interface with efficient data storage. With Material-UI enhancing the visual experience, this project exemplifies a comprehensive skill set in full-stack development. :)
 
 ### ✨ [Demo](https://write-share.web.app/)
 

@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,300&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,300&display=swap");
 * {
   box-sizing: border-box;
   padding: 0;
@@ -7,14 +7,12 @@
 }
 
 html {
-  font-family: 'Zen Kurenaido', sans-serif;
+  font-family: "Zen Kurenaido", sans-serif;
   font-size: large;
 }
-.shiftTop {
-  margin-top: 5rem;
-}
+
 body {
-  background: url('./assets/background.jpg');
+  background: url("./assets/background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -23,26 +21,17 @@ li {
   list-style-type: none;
 }
 a {
+  color: inherit;
+}
+a:hover {
   text-decoration: none;
-  font-family: 'Roboto', sans-serif;
-}
-.margin {
-  margin-top: 7rem;
-}
-.avatar {
-  border: 2px solid rgb(252, 114, 114);
-}
-.fallback {
-  font-size: 4rem;
-}
-.link {
-  font-weight: bolder;
-  cursor: pointer;
-}
-.center {
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  color: rgb(131, 119, 119);
 }
 
+.link {
+  cursor: pointer;
+}
+.link:hover {
+  color: rgb(61, 61, 238);
+  text-decoration: underline;
+}

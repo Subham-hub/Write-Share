@@ -1,35 +1,52 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
-
-import Card from '../../shared/UIElements/Card/Card'
-
-import classes from './css/UserBlog.module.css'
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { Container, Paper, Typography } from "@mui/material";
 
 const UserBlog = () => {
-  const uid = useParams().uid
-  const [blogs, setBlogs] = useState([])
-  const { allBlogs } = useSelector((s) => s.blogs)
-  useEffect(() => setBlogs(allBlogs.filter((blog) => blog.uid === uid)), [
-    allBlogs,
-    uid,
-  ])
+  const uid = useParams().uid;
+  const [blogs, setBlogs] = useState([]);
+  const { allBlogs } = useSelector((s) => s.blogs);
+  const navigate = useNavigate();
+  useEffect(
+    () => setBlogs(allBlogs.filter((blog) => blog.uid === uid)),
+    [allBlogs, uid]
+  );
 
   return (
-    <div className={classes.content}>
-      {blogs.map((blog) => (
-        <Card key={blog._id} className={classes.inner}>
+    <Container maxWidth="md">
+      {blogs.map((blog, index) => (
+        <Paper
+          elevation={10}
+          key={blog._id}
+          sx={{
+            bgcolor: "transparent",
+            p: 3,
+            maxWidth: "100%",
+            maxHeight: 300,
+            overflowY: "scroll",
+            mb: index + 1 !== blogs.length ? 4 : 0,
+          }}
+        >
           <ul>
             <li>
-              <h1>{blog.title}</h1>
-              <p>{blog.description}</p>
+              <Typography
+                variant="h4"
+                className="link"
+                onClick={() => navigate(`/blog/${blog._id}/details`)}
+              >
+                {index + 1}. {blog.title}
+              </Typography>
+              <Typography variant="h6" component="p" m>
+                {blog.description}
+              </Typography>
             </li>
           </ul>
           <hr />
-        </Card>
+        </Paper>
       ))}
-    </div>
-  )
-}
+    </Container>
+  );
+};
 
-export default UserBlog
+export default UserBlog;

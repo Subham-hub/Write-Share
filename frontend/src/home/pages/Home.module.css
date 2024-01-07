@@ -12,13 +12,13 @@
 .content {
   height: 100%;
   display: flex;
-  margin-top: 5rem ;
+  margin-top: 5rem;
   position: relative;
 }
 
 .content::after {
-  content: '';
-  background: linear-gradient(to top, rgb(184, 182, 182) 0%, grey 100%);
+  content: "";
+  background: linear-gradient(to top, rgb(44, 44, 44) 0%, rgb(0, 0, 0) 100%);
   position: absolute;
   width: 100%;
   height: inherit;
@@ -34,12 +34,11 @@
   z-index: 1;
 }
 .content-left h1 {
-  color: rgb(110, 167, 19);
+  color: rgb(145, 202, 53);
   padding: 1rem;
 }
 .content-left p {
   padding: 1rem;
-  /* background: rgb(244, 210, 245); */
 }
 .content-right {
   display: flex;

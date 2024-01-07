@@ -1,55 +1,51 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import BLogCard from '../components/BlogCard'
-import Button from '@mui/material/Button'
+import BLogCard from "../components/BlogCard";
+import Button from "@mui/material/Button";
 
-import classes from './css/MyBlogs.module.css'
+import { Box, Container, Typography } from "@mui/material";
 
 const Blogs = () => {
-  const navigate = useNavigate()
-  const [blogs, setBlogs] = useState([])
-  const { myBlogs } = useSelector((s) => s.blogs)
-  const { firstname } = useSelector((s) => s.userData)
+  const navigate = useNavigate();
+  const [blogs, setBlogs] = useState([]);
+  const { myBlogs } = useSelector((s) => s.blogs);
+  const { username } = useSelector((s) => s.userData);
 
-  const currentTime = new Date().getHours()
-  let greeting
+  const currentTime = new Date().getHours();
+  let greeting;
   if (currentTime < 12) {
-    greeting = 'Good morning'
+    greeting = "Good morning";
   } else if (currentTime < 18) {
-    greeting = 'Good afternoon'
+    greeting = "Good afternoon";
   } else {
-    greeting = 'Good night'
+    greeting = "Good night";
   }
 
-  useEffect(() => setBlogs(myBlogs), [myBlogs])
+  useEffect(() => setBlogs(myBlogs), [myBlogs]);
 
   return (
-    <div className={classes.content}>
-      <div className={classes.header + ' center'}>
-        <h1>Dashboard</h1>
-      </div>
-      <div className={classes.btn + ' center'}>
-        <Button variant="contained" onClick={() => navigate('/add-blog')}>
-          Add Blog
-        </Button>
-      </div>
-      <div className={classes.blogs}>
+    <Container maxWidth="xl" sx={{ mt: 15, textAlign: "center" }}>
+      <Typography variant="h4" gutterBottom>
+        Dashboard
+      </Typography>
+      <Button variant="contained" onClick={() => navigate("/add-blog")}>
+        Add Blog
+      </Button>
+      <Box mt={1}>
         {blogs && blogs.length !== 0 ? (
-          <>
-            <BLogCard
-              blogs={blogs}
-              showBtn={true}
-              heading={`${greeting} ${firstname.toLowerCase()}!`}
-            />
-          </>
+          <BLogCard
+            blogs={blogs}
+            showBtn={true}
+            heading={`${greeting} ${username.toLowerCase()}!`}
+          />
         ) : (
-          <p className="fallback center">No blogs found! Maybe add one?</p>
+          <Typography variant="h3">No blogs found! Maybe add one?</Typography>
         )}
-      </div>
-    </div>
-  )
-}
+      </Box>
+    </Container>
+  );
+};
 
-export default Blogs
+export default Blogs;

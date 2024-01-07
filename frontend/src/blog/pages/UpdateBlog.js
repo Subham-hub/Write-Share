@@ -1,42 +1,36 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { Button, TextField } from '@mui/material'
-import { useForm } from 'react-hook-form'
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Container, Paper, TextField, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
 
-import Card from '../../shared/UIElements/Card/Card'
-import LoadingSpinner from '../../shared/UIElements/LoadingSpinner/LoadingSpinner'
-import Modal from '../../shared/UIElements/Modal/Modal'
-import { useHttp } from '../../shared/hooks/http-hook'
-import { blogActions } from '../../shared/store/blogSlice'
-
-import classes from './css/UpdateBlog.module.css'
+import LoadingSpinner from "../../shared/UIElements/LoadingSpinner/LoadingSpinner";
+import Modal from "../../shared/UIElements/Modal/Modal";
+import { useHttp } from "../../shared/hooks/http-hook";
+import { blogActions } from "../../shared/store/blogSlice";
 
 const UpdateBlog = () => {
-  const [blog, setBlog] = useState()
-  const { isLoading, error, clearError, sendRequest } = useHttp()
-  const { token } = useSelector((s) => s.userData)
-  const { myBlogs } = useSelector((s) => s.blogs)
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { handleSubmit, register } = useForm()
-  const bid = useParams().bid
+  const [blog, setBlog] = useState();
+  const { isLoading, error, clearError, sendRequest } = useHttp();
+  const { token } = useSelector((s) => s.userData);
+  const { myBlogs } = useSelector((s) => s.blogs);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { handleSubmit, register } = useForm();
+  const { bid } = useParams();
 
-  useEffect(() => setBlog(myBlogs.find((b) => b._id === bid)), [bid, myBlogs])
+  useEffect(() => setBlog(myBlogs.find((b) => b._id === bid)), [bid, myBlogs]);
 
   const onSubmit = async (data) => {
     try {
-      await sendRequest(`blogs/edit/${bid}`, 'PATCH', data, {
+      await sendRequest(`blogs/edit/${bid}`, "PATCH", data, {
         Authorization: `Bearer ${token}`,
-      })
-      dispatch(blogActions.editBlogs({ bid, data }))
-      navigate('/blog')
-    } catch (e) {
-      throw new Error(
-        'Something went wrong while edting the blog, please try again',
-      )
-    }
-  }
+      });
+      dispatch(blogActions.editBlogs({ bid, data }));
+      navigate("/blog");
+      alert("Successfully Edited!");
+    } catch (e) {}
+  };
 
   return (
     <>
@@ -50,48 +44,45 @@ const UpdateBlog = () => {
       {isLoading && <LoadingSpinner asOverlay />}
       {!isLoading && blog && (
         <>
-          <div className={`${classes.content} center`}>
-            <Card className={classes.inner}>
-              <header>
-                <h1>Edit Blog</h1>
-              </header>
+          <Container maxWidth="md" sx={{ mt: 20 }}>
+            <Paper elevation={10} sx={{ p: 4, bgcolor: "transparent" }}>
+              <Typography variant="h4" gutterBottom textAlign="center">
+                Edit Blog
+              </Typography>
               <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-                <div className={classes.inputs}>
-                  <TextField
-                    style={{ width: '100%' }}
-                    label="New Title"
-                    defaultValue={blog.title}
-                    {...register('title', { required: true })}
-                  />
-                  <br />
-                  <br />
-                  <TextField
-                    style={{ width: '100%' }}
-                    label="New Description"
-                    multiline
-                    rows={7}
-                    defaultValue={blog.description}
-                    {...register('description', { minLength: 10 })}
-                  />
-                </div>
+                <TextField
+                  fullWidth
+                  label="New Title"
+                  defaultValue={blog.title}
+                  {...register("title", { required: true })}
+                />
                 <br />
-                <div className={classes.btn}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    type="submit"
-                  >
-                    UPDATE
-                  </Button>
-                </div>
+                <br />
+                <TextField
+                  fullWidth
+                  label="New Description"
+                  multiline
+                  rows={7}
+                  defaultValue={blog.description}
+                  sx={{ mb: 3 }}
+                  {...register("description", { minLength: 10 })}
+                />
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="large"
+                  type="submit"
+                  fullWidth
+                >
+                  UPDATE
+                </Button>
               </form>
-            </Card>
-          </div>
+            </Paper>
+          </Container>
         </>
       )}
     </>
-  )
-}
+  );
+};
 
-export default UpdateBlog
+export default UpdateBlog;

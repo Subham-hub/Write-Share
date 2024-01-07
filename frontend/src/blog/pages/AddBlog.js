@@ -1,58 +1,48 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { useForm } from 'react-hook-form'
-import { Button, TextField } from '@mui/material'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { Button, Container, Paper, TextField, Typography } from "@mui/material";
 
-import Card from '../../shared/UIElements/Card/Card'
-import Modal from '../../shared/UIElements/Modal/Modal'
-import LoadingSpinner from '../../shared/UIElements/LoadingSpinner/LoadingSpinner'
-import ImageUpload from '../../shared/UIElements/ImageUpload/ImageUpload'
-import { useHttp } from '../../shared/hooks/http-hook'
-import { blogActions } from '../../shared/store/blogSlice'
-
-import classes from './css/AddBlog.module.css'
-import { userDataActions } from '../../shared/store/userDataSlice'
+import Modal from "../../shared/UIElements/Modal/Modal";
+import LoadingSpinner from "../../shared/UIElements/LoadingSpinner/LoadingSpinner";
+import ImageUploader from "../../shared/UIElements/ImageUploader/ImageUploader";
+import { useHttp } from "../../shared/hooks/http-hook";
+import { blogActions } from "../../shared/store/blogSlice";
+import { userDataActions } from "../../shared/store/userDataSlice";
 
 const AddBlog = () => {
-  const [image, setImage] = useState()
-  const [imageIsValid, setImageIsVaid] = useState(false)
-  const { isLoading, error, clearError, sendRequest } = useHttp()
-  const navigate = useNavigate()
-  const { uid, firstname, token } = useSelector((s) => s.userData)
-  const dispatch = useDispatch()
-  const { handleSubmit, register } = useForm()
+  const [image, setImage] = useState();
+  const { isLoading, error, clearError, sendRequest } = useHttp();
+  const navigate = useNavigate();
+  const { uid, username, token } = useSelector((s) => s.userData);
+  const dispatch = useDispatch();
+  const { handleSubmit, register } = useForm();
 
   const onSubmit = async (data) => {
-    const formData = new FormData()
-    formData.append('title', data.title)
-    formData.append('description', data.description)
-    formData.append('author', firstname)
-    formData.append('uid', uid)
-    formData.append('image', image)
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("author", username);
+    formData.append("uid", uid);
+    formData.append("image", image);
     try {
-      const response = await sendRequest('blogs/add_blog', 'POST', formData, {
+      const response = await sendRequest("blogs/add_blog", "POST", formData, {
         Authorization: `Bearer ${token}`,
-      })
-      dispatch(blogActions.addBlogs({ flag: 'add', newBlog: response.blog }))
+      });
+      dispatch(blogActions.addBlogs({ flag: "add", newBlog: response.blog }));
       if (response)
         dispatch(
           userDataActions.updateData({
-            flag: 'BLOGS',
-            blogFlag: 'ADD',
+            flag: "BLOGS",
+            blogFlag: "ADD",
             bid: response.blog._id,
-          }),
-        )
-      navigate('/blog')
-    } catch (e) {
-      throw new Error(e)
-    }
-  }
-
-  const imageHandler = (pickedFile, fileIsValid) => {
-    setImage(pickedFile)
-    setImageIsVaid(fileIsValid)
-  }
+          })
+        );
+      alert("Successfully Added!");
+      navigate("/blog");
+    } catch (e) {}
+  };
 
   return (
     <>
@@ -66,46 +56,41 @@ const AddBlog = () => {
       {isLoading && <LoadingSpinner asOverlay />}
       {!isLoading && (
         <>
-          <div className="center">
-            <Card className={classes.content}>
-              <header>
-                <h1>Add Blog</h1>
-              </header>
+          <Container maxWidth="sm" sx={{ pt: 15 }}>
+            <Paper elevation={10} sx={{ bgcolor: "transparent", p: 3 }}>
+              <Typography textAlign="center" variant="h3" gutterBottom>
+                Add Blog
+              </Typography>
               <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-                <ImageUpload onImageUpload={imageHandler} />
-                <br />
-                <TextField
-                  style={{ width: '100%' }}
-                  label="Title"
-                  {...register('title', { required: true })}
+                <ImageUploader
+                  onImageUpload={(pickedFile) => setImage(pickedFile)}
                 />
-                <br />
-                <br />
                 <TextField
-                  style={{ width: '100%' }}
+                  style={{ width: "100%" }}
+                  label="Title"
+                  {...register("title", { required: true })}
+                  sx={{ mt: 2, mb: 2 }}
+                />
+
+                <TextField
+                  style={{ width: "100%" }}
                   label="Description"
                   multiline
-                  rows={7}
-                  {...register('description', { minLength: 10 })}
+                  rows={5}
+                  {...register("description", { minLength: 10 })}
+                  sx={{ mb: 2 }}
                 />
-                <br />
-                <br />
-                <div className={classes.btn}>
-                  <Button
-                    disabled={!imageIsValid}
-                    variant="contained"
-                    type="submit"
-                  >
-                    POST
-                  </Button>
-                </div>
+
+                <Button fullWidth variant="contained" type="submit">
+                  POST
+                </Button>
               </form>
-            </Card>
-          </div>
+            </Paper>
+          </Container>
         </>
       )}
     </>
-  )
-}
+  );
+};
 
-export default AddBlog
+export default AddBlog;

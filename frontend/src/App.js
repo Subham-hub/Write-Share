@@ -1,41 +1,36 @@
-import React, { Suspense, lazy, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import React, { Suspense, lazy, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-import NavBar from './shared/Navigation/NavBar'
-import LoadingSpinner from './shared/UIElements/LoadingSpinner/LoadingSpinner'
-import { fetchBlogs } from './shared/store/blogSlice'
-import { autoLogin } from './shared/store/userDataSlice'
+import Layout from "./Layout";
+import LoadingSpinner from "./shared/UIElements/LoadingSpinner/LoadingSpinner";
+import { fetchBlogs } from "./shared/store/blogSlice";
+import { autoLogin } from "./shared/store/userDataSlice";
+import { ToastContainer } from "react-toastify";
 
-const Home = lazy(() => import('./home/pages/Home'))
-const Auth = lazy(() => import('./user/pages/Auth'))
-const AddBlog = lazy(() => import('./blog/pages/AddBlog'))
-const UpdateBlog = lazy(() => import('./blog/pages/UpdateBlog'))
-const BlogDetail = lazy(() => import('./blog/pages/BlogDetail'))
-const Blogs = lazy(() => import('./blog/pages/MyBlogs'))
-const UserBlog = lazy(() => import('./user/components/UserBlog'))
-const Userprofile = lazy(() => import('./user/components/UserProfile'))
-const MyProfile = lazy(() => import('./user/pages/MyProfile'))
+const Home = lazy(() => import("./home/pages/Home"));
+const Auth = lazy(() => import("./user/pages/Auth"));
+const AddBlog = lazy(() => import("./blog/pages/AddBlog"));
+const UpdateBlog = lazy(() => import("./blog/pages/UpdateBlog"));
+const BlogDetail = lazy(() => import("./blog/pages/BlogDetail"));
+const Blogs = lazy(() => import("./blog/pages/MyBlogs"));
+const UserBlog = lazy(() => import("./user/components/UserBlog"));
+const Userprofile = lazy(() => import("./user/components/UserProfile"));
+const MyProfile = lazy(() => import("./user/pages/MyProfile"));
 
 const App = () => {
-  const dispatch = useDispatch()
-  const { isLoggedIn } = useSelector((s) => s.auth)
+  const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((s) => s.auth);
 
   useEffect(() => {
-    dispatch(autoLogin())
-    dispatch(fetchBlogs())
-  }, [dispatch])
+    dispatch(autoLogin());
+    dispatch(fetchBlogs());
+  }, [dispatch]);
 
   return (
-    <>
-      <NavBar />
-      <Suspense
-        fallback={
-          <div className="center">
-            <LoadingSpinner asOverlay />
-          </div>
-        }
-      >
+    <Layout>
+      <ToastContainer />
+      <Suspense fallback={<LoadingSpinner asOverlay />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blogs />} />
@@ -55,7 +50,7 @@ const App = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-    </>
-  )
-}
-export default App
+    </Layout>
+  );
+};
+export default App;

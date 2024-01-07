@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const blogSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -8,7 +8,8 @@ const blogSchema = new mongoose.Schema({
     id: { type: String, required: true },
     secure_url: { type: String, required: true },
   },
-  uid: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
-})
+  uid: { type: mongoose.Types.ObjectId, required: true, ref: "User" },
+  createdAt: { type: Date, default: Date.now() },
+});
 
-export default mongoose.model('Blog', blogSchema)
+export default mongoose.model("Blog", blogSchema);
